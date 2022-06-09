@@ -1,0 +1,50 @@
+<style>
+    .toolbar {
+        display: flex;
+        flex: 1;
+        flex-direction: row;
+    }
+
+    .toolbar-slot {
+        display: flex;
+        flex: 1;
+        flex-direction: row;
+    }
+
+    .slot-left {
+        justify-content: flex-start;
+    }
+
+    .slot-center {
+        justify-content: center;
+    }
+
+    .slot-right {
+        justify-content: flex-end;
+    }
+</style>
+
+<script type="text/javascript">
+    Vue.component('vue-grid-toolbar', {
+        props: {
+            columns: Array,
+            data: Array
+        },
+        template: '#vue-grid-toolbar-template'
+    });
+</script>
+
+<script type="text/template" id="vue-grid-toolbar-template">
+  <div class="toolbar">
+      
+        <div class="toolbar-slot slot-left">
+            <slot name="left"></slot>
+        </div>
+        <div class="toolbar-slot slot-center">
+            <slot name="center"></slot>
+        </div>
+        <div class="toolbar-slot slot-right">
+            <slot name="right"></slot>
+        </div>
+  </div>
+</script>

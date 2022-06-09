@@ -1,0 +1,44 @@
+@{Html.RenderPartial("~/Pages/VueComponents/_Crud.cshtml");}
+
+<script type="text/javascript">
+    Vue.component('vue-alunos-crud', {
+        model: {
+            prop: 'show',
+            event: 'change-show-modal'
+        },
+        props: {
+            id: String,
+            titleCreate: String,
+            titleUpdate: String,
+            data: {},
+            path: String,
+            show: false,
+        },
+        template: '#vue-alunos-crud-template',
+        computed: {
+            isShow: {
+                get() {
+                    return this.show
+                },
+                set (value) {
+                    this.$emit('change-show-modal', value)
+                }
+            }
+        }
+    });
+</script>
+
+<script type="text/template" id="vue-alunos-crud-template">
+    <vue-crud
+        v-bind:id="id"
+        title-create="titleCreate"
+        title-update="titleUpdate"
+        v-bind:data="data"
+        v-bind:path="path"
+        v-model="isShow"
+        @@onSaveResult="$emit('onSaveResult', $event)"
+        >
+        <h1>teste</h1>
+    </vue-crud>
+</script>
+

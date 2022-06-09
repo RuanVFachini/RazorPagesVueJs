@@ -1,0 +1,70 @@
+<script type="text/javascript">
+    Vue.component('vue-crud', {
+        model: {
+            prop: 'show',
+            event: 'change-show'
+        },
+        props: {
+            id: String,
+            titleCreate: String,
+            titleUpdate: String,
+            data: {},
+            path: String,
+            show: false
+        },
+        template: '#vue-crud-template',
+        methods: {
+            isCreate: function() {
+                return hasValue(this.data?.Id)
+            },
+        },
+        computed: {
+            title() {
+                return this.isCreate() ? this.titleCreate : this.titleUpdate
+            },
+            isShow: {
+                get() {
+                    return this.show
+                },
+                set (value) {
+                    this.$emit('change-show', value)
+                }
+            }
+            
+        }
+    });
+
+    function create() {
+        return AjaxPost(
+            component.path,
+            "create",
+            component.data)
+            .done((data) => {
+                component.show = false
+                component.$emit('success', { data: data, success: true})
+            })
+            .fail((failure) => {
+                component.$emit('failure', { success: false})
+            })
+    }
+
+    function update() {
+        return AjaxPost(
+            component.path,
+            "update",
+            component.data)
+            .done((data) => {
+                component.show = false
+                component.$emit('success', { data: data, success: true})
+            })
+            .fail((failure) => {
+                component.$emit('failure', { success: false})
+            })
+    }
+</script>
+
+<script type="text/template" id="vue-crud-template">
+    <b-modal v-bind:id="id" v-bind:title="title" v-model="isShow">
+        <slot></slot>
+    </b-modal>
+</script>
