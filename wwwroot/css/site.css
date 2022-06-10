@@ -20,3 +20,12 @@ body {
 .btn-group-separator {
   width: 2px;
 }
+
+.logo {
+  width: 50px;
+  height: 50px;
+}
+
+.main-container {
+  padding-top: 10px;
+}

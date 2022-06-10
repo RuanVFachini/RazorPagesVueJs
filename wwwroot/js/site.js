@@ -25,13 +25,35 @@ function AjaxPost(path, handler, requestData) {
     return $.ajax(ajax)
 }
 
-function AjaxGET(path, handler, requestData) {
+function AjaxGet(path, handler, requestData) {
     let ajax = baseAjaxObject(path, handler, requestData);
     ajax.type = "GET"
     return $.ajax(ajax)
 }
 
-function hasValue(obj) {
-    return typeof(obj) != 'undefined' && obj != null && obs != {};
+function hasValue(arrayObj, key = null) {
+    let objType = typeof(arrayObj)
+    let firstValidation =  objType!= 'undefined' 
+        && objType != null
+
+
+    let secondValidation =  Array.isArray(arrayObj) ? hasValue(arrayObj[key]) : true;
+
+    if (typeof(arrayObj) == 'object') {
+        if (key != null) {
+            firstValidation = firstValidation && secondValidation
+        }
+    
+        if (firstValidation) {
+            return Object.keys(arrayObj).length > 0
+        }
+    }
+
+    return firstValidation
+        
+}
+
+function isString(value) {
+    return typeof value === 'string' || value instanceof String
 }
 

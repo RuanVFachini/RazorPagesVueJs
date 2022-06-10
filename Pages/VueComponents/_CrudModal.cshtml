@@ -1,0 +1,118 @@
+<script type="text/javascript">
+    Vue.component('vue-crud-modal', {
+        model: {
+            prop: 'show',
+            event: 'change-show'
+        },
+        props: {
+            id: String,
+            titleCreate: String,
+            titleUpdate: String,
+            form: {
+                type: Object,
+                default: {}
+            },
+            operation: null,
+            path: String,
+            show: false
+        },
+        data() {
+            return {
+                title: ''
+            }
+        },
+        template: '#vue-crud-modal-template',
+        methods: {
+            onSubmit(event) {
+                if (this.operation == 'create') {
+                    postCreate(this)
+                } else {
+                    postUpdate(this)
+                }
+            },
+            delete() {
+                postDelete(this)
+            },
+            onReset(event) {
+                this.isShow = false    
+                this.$emit('reset', event)
+            },
+            propagateEvent(eventName, eventArgs) {
+                if (isString(eventName)) {
+                    this.$emit(eventName, eventArgs)
+                }
+                
+            }
+        },
+        computed: {
+            isShow: {
+                get() {
+                    return this.show && hasValue(this.form)
+                },
+                set (value) {
+                    this.$emit('change-show', value)
+                }
+            }
+        },
+        watch: {
+            operation (value, oldValue) {
+                return this.title = value == 'create' ? this.titleCreate : this.titleUpdate
+            }
+        }
+    })
+
+    function postDelete(component) {
+        return AjaxPost(
+            component.path,
+            "delete/" + component.form?.id)
+            .done((data) => {
+                component.propagateEvent('delete', { data: data, success: true})
+            })
+            .fail((failure) => {
+                component.propagateEvent('delete', { data: data, success: false})
+            })
+    }
+
+    function postCreate(component) {
+        return AjaxPost(
+            component.path,
+            "create",
+            component.form)
+            .done((data) => {
+                component.isShow = false
+                component.propagateEvent('create', { data: data, success: true})
+            })
+            .fail((failure) => {
+                component.propagateEvent('create', { data: {},  success: false})
+            })
+    }
+
+    function postUpdate(component) {
+        return AjaxPost(
+            component.path,
+            "update",
+            component.form)
+            .done((data) => {
+                component.isShow = false
+                component.propagateEvent('update', { data: data, success: true})
+            })
+            .fail((failure) => {
+                component.propagateEvent('update', { success: false})
+            })
+    }
+</script>
+
+<script type="text/template" id="vue-crud-modal-template">
+    <b-modal :id="id" :title="title" v-model="isShow" :hide-footer="true">
+        <b-form 
+            v-if="isShow"
+            @@submit.prevent="onSubmit"
+            @@reset.prevent="onReset">
+            <slot></slot>
+            <div class="mt-5">
+                <b-button type="submit" variant="primary">Salvar</b-button>
+                <b-button type="reset" variant="danger">Cancelar</b-button>
+            </div>
+        </b-form>
+    </b-modal>
+</script>

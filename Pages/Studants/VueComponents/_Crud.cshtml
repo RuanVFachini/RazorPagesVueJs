@@ -1,0 +1,111 @@
+@{Html.RenderPartial("~/Pages/VueComponents/_CrudModal.cshtml");}
+
+
+
+<script type="text/javascript">
+
+    Vue.component('vue-studant-crud', {
+        id:'studant-crud',
+        model: {
+            prop: 'show',
+            event: 'change-show'
+        },
+        props: {
+            data: {
+                type: Object,
+                default: () => {}
+            },
+            operation: null,
+            show: false,
+        },
+        data() {
+            return {
+                path: '/Studants',
+                form: {}
+            }
+        },
+        template: '#vue-alunos-crud-template',
+        methods: {
+            propagateShowEvent: function(value) {
+                this.$emit('change-show', value)
+            },
+            propagateUpdateEvent: function(value) {
+                this.$emit('update', value)
+                this.propagateChangeDataEvent()
+            },
+            propagateCreateEvent: function(value) {
+                this.$emit('create', value)
+                this.propagateChangeDataEvent()
+            },
+            propagateDeleteEvent: function(value) {
+                this.$emit('delete', value)
+                this.propagateChangeDataEvent()
+            },
+            propagateResetEvent: function(value) {
+                this.$emit('reset', value)
+            },
+            propagateChangeDataEvent: function(value) {
+                this.$emit('change-data')
+            },
+            delete() {
+                this.$refs.crud.delete()
+            }
+        },
+        watch: {
+            show(value) {
+                if (value && !hasValue(this.data)) {
+                    this.propagateShowEvent(false)   
+                }
+            },
+            data(value) {
+                if (hasValue(value)) {
+                    this.form = value
+                } else{
+                    this.form = {}
+                } 
+            }
+        }
+    });
+</script>
+
+<script type="text/template" id="vue-alunos-crud-template">
+    <vue-crud-modal
+        ref="crud"
+        :id="'studant-crud-modal'"
+        :title-create="'New studant'"
+        :title-update="'Edit studant'"
+        :path="path"
+        :form="form"
+        :show="show"
+        :operation="operation"
+        @@change-show="propagateShowEvent"
+        @@reset="propagateResetEvent"
+        @@update="propagateUpdateEvent"
+        @@create="propagateCreateEvent"
+        @@delete="propagateDeleteEvent">
+
+        <b-form-group id="input-group-1" label="Name:" label-for="input-1">
+            <b-form-input
+                id="input-1"
+                v-model="data.name"
+                placeholder="Enter with a studant name"
+                required>
+            </b-form-input>
+        </b-form-group>
+
+        <b-form-group id="input-group-2" label="Average Score:" label-for="input-2">
+            <b-form-input
+                id="input-2"
+                v-model="data.averageScore"
+                type="number"
+                min=0
+                max=100
+                :no-wheel="true"
+                :step="0.5"
+                placeholder="Enter with a studant average score"
+                required>
+            </b-form-input>
+        </b-form-group>
+    </vue-crud-modal>
+</script>
+

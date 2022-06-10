@@ -1,0 +1,113 @@
+@page "/Studants/{handler?}/{id?}"
+
+@namespace razor_web_pages.Pages
+
+@model StudantModel
+
+@{
+    ViewData["Title"] = "Studants page";
+}
+
+<div id="alunos-app">
+    <vue-studant-grid 
+        ref="grid"
+        @@select="onGridSelection">
+        <vue-grid-toolbar>
+            <template v-slot:left>
+                <div class="btn-group" role="group" aria-label="Basic outlined example">
+                    <b-button type="button" class="btn btn-outline-primary" @@click="openCrudModal('create')">Criar</b-button>
+                    <b-button type="button" class="btn btn-outline-primary" @@click="openCrudModal('update')">Editar</b-button>
+                    <b-button type="button" class="btn btn-outline-primary" @@click="onRemove">Remover</b-button>
+                </div>
+            </template>
+        </vue-grid-toolbar>
+    </vue-studant-grid>
+
+    <vue-studant-crud
+        ref="crud"
+        :data="selected"
+        v-model="show"
+        :operation='crudOperation'
+        @@create="onCreateResult"
+        @@update="onUpdateResult"
+        @@delete="onDeleteResult"
+        @@change-data="onChangeData"
+        @@change-show="onChangeModalShow">
+    </vue-studant-crud>
+</div>
+
+@section Scripts {
+
+    <partial name="~/Pages/VueComponents/_GridToolBar.cshtml" />
+    <partial name="~/Pages/Studants/VueComponents/_Grid.cshtml" />
+    <partial name="~/Pages/Studants/VueComponents/_Crud.cshtml" />
+
+    <script type="text/javascript">
+
+        new Vue({
+            el: '#alunos-app',
+            data() {
+                return  {
+                    selected: {},
+                    crudOperation: null,
+                    show: false
+                }
+            },
+            methods: {
+                onGridSelection: function (selected) {
+                    this.selected = selected
+                },
+                onChangeData: function() {
+                    this.selected = {}
+                    this.$refs.grid.load()
+                },
+                onChangeModalShow: function(show) {
+                    if (!show) {
+                        this.clearSelection()
+                    }
+                },
+                openCrudModal: function (operation) {
+
+                    if (operation == 'create') {
+                        this.selected = {
+                            id: null,
+                            name: null,
+                            averageScore: null
+                        }
+                    } else if (!hasValue(this.selected?.id)) {
+                        alert('Selecione um registro para editar')
+                    }
+
+                    this.crudOperation = operation
+                    this.show = true
+                },
+                onRemove: function (event) {
+                    if (hasValue(this.selected?.id)) {
+                        this.$refs.crud.delete(this.selected?.id)
+                    } else {
+                        alert('Selecione um registro para deletar')
+                    }
+                },
+                onCreateResult: function (event) {
+                    if (!event.success) {
+                        alert('Ocorreu um erro ao criar o registro')
+                    }
+                },
+                onUpdateResult: function (event) {
+                    if (!event.success) {
+                        alert('Ocorreu um erro ao atualizar o registro')
+                    }
+                },
+                onDeleteResult: function (event) {
+                    if (!event.success) {
+                        alert('Ocorreu um erro ao excluir o registro')
+                    }
+                },
+                clearSelection: function ()  {
+                    this.selected = {}
+                }
+            }
+        })
+
+    </script>
+}

@@ -11,8 +11,25 @@ public abstract class CustomPageModel : PageModel
         if (context.HandlerMethod == null) {
             context.Result = new NotFoundResult();
         }
+    }
 
-        base.OnPageHandlerExecuted(context);
+    protected IActionResult IActionResultExecution(Func<object> action) {
+        try
+        {
+            var result = action.Invoke();
+
+            return new JsonResult(result)
+            {
+                StatusCode = 200
+            };
+        }
+        catch
+        {
+            return new JsonResult("Unexpected request error")
+            {
+                StatusCode = 500
+            };
+        }
     }
     
 }
