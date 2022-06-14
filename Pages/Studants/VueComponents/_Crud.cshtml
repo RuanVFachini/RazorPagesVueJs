@@ -27,7 +27,6 @@
         template: '#vue-alunos-crud-template',
         methods: {
             propagateShowEvent: function(value) {
-                this.form = {}
                 this.$emit('change-show', value)
             },
             propagateUpdateEvent: function(value) {
@@ -48,7 +47,8 @@
             propagateChangeDataEvent: function(value) {
                 this.$emit('change-data')
             },
-            delete() {
+            delete(id) {
+                this.form.id = id
                 this.$refs.crud.delete()
             },
             clearForm() {
@@ -58,6 +58,28 @@
                     'averageScore': 0
                 }
             }
+        },
+        computed: {
+          crudModalListeners: function() {
+            let vm = this
+            return {
+              "change-show": function(value) {
+                  vm.propagateShowEvent(value)
+              },
+              reset: function(value) {
+                  vm.propagateResetEvent(value)
+              },
+              update: function(value) {
+                  vm.propagateUpdateEvent(value)
+              },
+              create: function(value) {
+                  vm.propagateCreateEvent(value)
+              },
+              delete: function(value) {
+                  vm.propagateDeleteEvent(value)
+              }
+            }
+          }
         },
         watch: {
             operation(value) {
@@ -88,11 +110,7 @@
         :form="form"
         :show="show"
         :operation="operation"
-        @@change-show="propagateShowEvent"
-        @@reset="propagateResetEvent"
-        @@update="propagateUpdateEvent"
-        @@create="propagateCreateEvent"
-        @@delete="propagateDeleteEvent">
+        v-on="crudModalListeners">
 
         <b-form-group id="input-group-1" label="Name:" label-for="input-1">
             <b-form-input

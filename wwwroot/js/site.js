@@ -36,25 +36,29 @@ function AjaxGet(path, handler, requestData) {
 }
 
 function hasValue(arrayObj, key = null) {
-    let objType = typeof(arrayObj)
-    let firstValidation =  objType!= 'undefined' 
-        && objType != null
+  let objType = typeof(arrayObj)
+  
+  if (objType == 'undefined' || arrayObj == null) {
+      return false
+  }
 
+  if (typeof(arrayObj) == 'object') {
+      if (key != null) {
+          return hasValue(arrayObj[key])
+      } else {
+          return Object.keys(arrayObj).length > 0
+      }
+  }
 
-    let secondValidation =  Array.isArray(arrayObj) ? hasValue(arrayObj[key]) : true;
+  if (Array.isArray(arrayObj)) {
+      if (key != null) {
+          return hasValue(arrayObj[key])
+      } else {
+          return arrayObj.length > 0
+      }
+  }
 
-    if (typeof(arrayObj) == 'object') {
-        if (key != null) {
-            firstValidation = firstValidation && secondValidation
-        }
-    
-        if (firstValidation) {
-            return Object.keys(arrayObj).length > 0
-        }
-    }
-
-    return firstValidation
-        
+  return true
 }
 
 function isString(value) {

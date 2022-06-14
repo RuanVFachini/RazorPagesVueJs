@@ -41,7 +41,6 @@
                 if (isString(eventName)) {
                     this.$emit(eventName, eventArgs)
                 }
-                
             }
         },
         computed: {
@@ -66,10 +65,10 @@
             component.path,
             "delete/" + component.form?.id)
             .done((data) => {
-                component.propagateEvent('delete', { data: data, success: true})
+                component.propagateEvent('delete', { data: data.item, success: true})
             })
             .fail((failure) => {
-                component.propagateEvent('delete', { data: data, success: false})
+                component.propagateEvent('delete', { data: data.item, success: false})
             })
     }
 
@@ -80,7 +79,7 @@
             component.form)
             .done((data) => {
                 component.isShow = false
-                component.propagateEvent('create', { data: data, success: true})
+                component.propagateEvent('create', { data: data.item, success: true})
             })
             .fail((failure) => {
                 component.propagateEvent('create', { data: {},  success: false})

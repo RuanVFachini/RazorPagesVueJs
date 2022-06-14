@@ -9,6 +9,23 @@
     display: flex;
     flex-direction: column;
   }
+
+  .custom-pagination {
+    margin-top: 10px;
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+
+  .pagination-display{
+    margin-left: 5px;
+  }
+
+  .custom-pagination ul {
+    margin-bottom: 1px;
+    margin-left: 5px;
+  }
 </style>
 
 <script type="text/javascript">
@@ -56,7 +73,9 @@
         computed: {
           paginationInfo() {
               let current = this.filter.skip + 1
-              return `${current} - ${current + this.filter.maxResult}`
+              let maxResult = current + this.filter.maxResult - 1
+              maxResult = maxResult > this.totalRows ? this.totalRows : maxResult
+              return `${current} - ${maxResult}`
           }
         },
         watch: {
@@ -93,13 +112,26 @@
       <slot name="table-toolbar">
       </slot>
       <slot name="table-pagination">
-        <b-pagination
-            class="mt-1"
-            style="align-self:flex-end;"
-            v-model="currentPage"
-            :total-rows="totalRows"
-            :per-page="filter.maxResult">
-        </b-pagination>
+        <div class="custom-pagination">
+          <ul 
+            class="pagination mt-1 b-pagination">
+            <li class="page-item disabled bv-d-xs-down-none">
+              <span class="page-link grid-info">{{paginationInfo}}</span>
+            </li>
+            <li class="page-item disabled bv-d-xs-down-none">
+              <span class="page-link">de</span>
+            </li>
+            <li class="page-item disabled bv-d-xs-down-none">
+              <span class="page-link grid-info">{{totalRows}}</span>
+            </li>
+          </ul>
+          <b-pagination
+              class="mt-1"
+              v-model="currentPage"
+              :total-rows="totalRows"
+              :per-page="filter.maxResult">
+          </b-pagination>
+        </div>
       </slot>
     </div>
     <b-table 
@@ -112,7 +144,12 @@
       :selectable="true"
       :select-mode="'single'"
       :per-page="0"
+      :label-sort-asc="''"
+      :label-sort-desc="''"
+      :label-sort-clear="''"
       :no-local-sorting="true"
+      :sort-by="'id'"
+      :sort-desc="false"
       @@row-selected="onSelect"
       @@sort-changed="onSort"
       outlined>
