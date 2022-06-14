@@ -21,12 +21,13 @@
         data() {
             return {
                 path: '/Studants',
-                form: {}
+                form: {},
             }
         },
         template: '#vue-alunos-crud-template',
         methods: {
             propagateShowEvent: function(value) {
+                this.form = {}
                 this.$emit('change-show', value)
             },
             propagateUpdateEvent: function(value) {
@@ -49,19 +50,28 @@
             },
             delete() {
                 this.$refs.crud.delete()
+            },
+            clearForm() {
+                this.form = {
+                    'id': null,
+                    'name': '',
+                    'averageScore': 0
+                }
             }
         },
         watch: {
-            show(value) {
-                if (value && !hasValue(this.data)) {
-                    this.propagateShowEvent(false)   
+            operation(value) {
+                if (value == 'create') {
+                    this.clearForm()
+                } else {
+                    this.form = this.data
                 }
             },
             data(value) {
-                if (hasValue(value)) {
+                if (this.operation == 'update' && hasValue(value)) {
                     this.form = value
                 } else{
-                    this.form = {}
+                    this.clearForm()
                 } 
             }
         }
@@ -87,7 +97,7 @@
         <b-form-group id="input-group-1" label="Name:" label-for="input-1">
             <b-form-input
                 id="input-1"
-                v-model="data.name"
+                v-model="form.name"
                 placeholder="Enter with a studant name"
                 required>
             </b-form-input>
@@ -96,12 +106,12 @@
         <b-form-group id="input-group-2" label="Average Score:" label-for="input-2">
             <b-form-input
                 id="input-2"
-                v-model="data.averageScore"
+                v-model="form.averageScore"
                 type="number"
                 min=0
                 max=100
+                :step="0.01"
                 :no-wheel="true"
-                :step="0.5"
                 placeholder="Enter with a studant average score"
                 required>
             </b-form-input>

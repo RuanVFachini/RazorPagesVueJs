@@ -2,6 +2,10 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
+function numberLocalizationFormat(value) {
+    
+}
+
 function baseAjaxObject(path, handler, data) {
     let ajax =  {
         beforeSend: function (xhr) {

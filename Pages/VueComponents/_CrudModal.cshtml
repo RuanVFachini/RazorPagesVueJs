@@ -47,7 +47,7 @@
         computed: {
             isShow: {
                 get() {
-                    return this.show && hasValue(this.form)
+                    return this.show
                 },
                 set (value) {
                     this.$emit('change-show', value)

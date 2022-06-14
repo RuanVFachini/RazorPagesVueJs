@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using razor_web_pages.RazorCustomizations;
 using RazorPagesVueJs.Data;
+using RazorPagesVueJs.Dtos;
+using RazorPagesVueJs.Extensions;
 using RazorPagesVueJs.Models;
 using RazorPagesVueJs.Utils;
 
@@ -8,14 +10,12 @@ namespace razor_web_pages.Pages;
 
 public class StudantModel : CustomPageModel
 {
-    private readonly ILogger<StudantModel> _logger;
     private readonly FakeRepository _fakeRepository;
 
     public StudantModel(
         ILogger<StudantModel> logger,
-        FakeRepository fakeRepository)
+        FakeRepository fakeRepository) : base(logger)
     {
-        _logger = logger;
         _fakeRepository = fakeRepository;
     }
 
@@ -23,13 +23,18 @@ public class StudantModel : CustomPageModel
     {
     }
 
-    public IActionResult OnGetList(RequestModel request)
+    public IActionResult OnGetList(RequestModelDto request)
     {
         return IActionResultExecution(() => {
-            return _fakeRepository.Records
-                .Skip(request.Skip)
-                .Take(request.MaxResult)
+            var query = _fakeRepository.Records.AsQueryable();
+
+            var resultList = query
+                .SortAndPage(request)
                 .ToList();
+
+            var total = query.Count();
+
+            return new ApiListResultDto<StudantEntity>(resultList, total);
         });
     }
 
@@ -38,7 +43,7 @@ public class StudantModel : CustomPageModel
         return IActionResultExecution(() => {
             var delete = _fakeRepository.Records.First(x => x.Id == id);
             _fakeRepository.Records.Remove(delete);
-            return delete;
+            return new ApiSingleResultDto<StudantEntity>(delete);
         });
     }
 
@@ -50,7 +55,7 @@ public class StudantModel : CustomPageModel
 
         return IActionResultExecution(() => {
             _fakeRepository.Records.Add(studant);
-            return studant;
+            return new ApiSingleResultDto<StudantEntity>(studant);
         });
     }
 
@@ -60,7 +65,7 @@ public class StudantModel : CustomPageModel
             var toUpdate = _fakeRepository.Records.First(x => x.Id == id);
             toUpdate.AverageScore = studant.AverageScore;
             toUpdate.Name = studant.Name;
-            return toUpdate;
+            return new ApiSingleResultDto<StudantEntity>(toUpdate);
         });
     }
 }

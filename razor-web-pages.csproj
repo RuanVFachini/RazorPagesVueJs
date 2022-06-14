@@ -8,6 +8,10 @@
     <RootNamespace>razor_web_pages</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Serilog" Version="2.11.0" />
   </ItemGroup>

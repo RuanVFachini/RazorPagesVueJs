@@ -15,9 +15,9 @@
         <vue-grid-toolbar>
             <template v-slot:left>
                 <div class="btn-group" role="group" aria-label="Basic outlined example">
-                    <b-button type="button" class="btn btn-outline-primary" @@click="openCrudModal('create')">Criar</b-button>
-                    <b-button type="button" class="btn btn-outline-primary" @@click="openCrudModal('update')">Editar</b-button>
-                    <b-button type="button" class="btn btn-outline-primary" @@click="onRemove">Remover</b-button>
+                    <b-button type="button" variant="primary" @@click="openCrudModal('create')">Criar</b-button>
+                    <b-button type="button" variant="primary" @@click="openCrudModal('update')">Editar</b-button>
+                    <b-button type="button" variant="primary" @@click="onRemove">Remover</b-button>
                 </div>
             </template>
         </vue-grid-toolbar>
@@ -31,8 +31,7 @@
         @@create="onCreateResult"
         @@update="onUpdateResult"
         @@delete="onDeleteResult"
-        @@change-data="onChangeData"
-        @@change-show="onChangeModalShow">
+        @@change-data="onChangeData">
     </vue-studant-crud>
 </div>
 
@@ -58,24 +57,13 @@
                     this.selected = selected
                 },
                 onChangeData: function() {
-                    this.selected = {}
                     this.$refs.grid.load()
-                },
-                onChangeModalShow: function(show) {
-                    if (!show) {
-                        this.clearSelection()
-                    }
                 },
                 openCrudModal: function (operation) {
 
-                    if (operation == 'create') {
-                        this.selected = {
-                            id: null,
-                            name: null,
-                            averageScore: null
-                        }
-                    } else if (!hasValue(this.selected?.id)) {
+                    if (operation == 'update' && !hasValue(this.selected?.id)) {
                         alert('Selecione um registro para editar')
+                        return    
                     }
 
                     this.crudOperation = operation
@@ -102,9 +90,6 @@
                     if (!event.success) {
                         alert('Ocorreu um erro ao excluir o registro')
                     }
-                },
-                clearSelection: function ()  {
-                    this.selected = {}
                 }
             }
         })

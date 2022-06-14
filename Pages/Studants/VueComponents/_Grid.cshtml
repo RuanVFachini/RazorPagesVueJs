@@ -3,53 +3,81 @@
     display: flex;
     flex-direction: column;
   }
+
+  .grid-top-slot {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
 </style>
 
 <script type="text/javascript">
     Vue.component('vue-studant-grid', {
-        data() {
-            return {
-              fields: [{
-                key: 'id',
-                label: 'Code',
-                sortable: true,
-              },
-              {
-                key: 'name',
-                label: 'Name',
-                sortable: true,
-              },
-              {
-                key: 'averageScore',
-                label: 'Average Score',
-                sortable: true,
-              }],
-              items: [],
-              path: '/Studants',
-              isBusy: false,
-              filter: {
-                skip: 0,
-                take: 100
-              }
+      data() {
+          return {
+            fields: [{
+              key: 'id',
+              label: 'Code',
+              sortable: true,
+            },
+            {
+              key: 'name',
+              label: 'Name',
+              sortable: true,
+            },
+            {
+              key: 'averageScore',
+              label: 'Average Score',
+              sortable: true,
+            }],
+            items: [],
+            totalRows: 0,
+            path: '/Studants',
+            isBusy: false,
+            selected: null,
+            currentPage: 1,
+            filter: {
+              skip: 0,
+              maxResult: 20,
+              sort: null
             }
-        },
-        template: '#vue-studants-grid-template',
-        methods: {
-          onSelect(lines) {
-            if (lines.length > 0) {
-              this.$emit('select', lines[0])
-            }
-          },
-          isBusyToggle () {
-            this.isBusy = !this.isBusy
-          },
-          load() {
-            loadExternalData(this)
           }
+      },
+      template: '#vue-studants-grid-template',
+      methods: {
+        onSelect(lines) {
+          this.selected = lines.length > 0 ? lines[0] : null
+          this.$emit('select', this.selected)
         },
-        mounted() {
+        onSort(tableCtx) {
+          let sort = tableCtx.sortDesc ? '-' : '+'
+          sort = sort + tableCtx.sortBy
+          this.filter.sort = sort
+          this.filter.skip = 0
           this.load()
+          this.currentPage = 1
         },
+        isBusyToggle () {
+          this.isBusy = !this.isBusy
+        },
+        load() {
+          loadExternalData(this)
+        }
+      },
+      mounted() {
+        this.load()
+      },
+      computed: {
+        paginationInfo() {
+          return "a"
+        }
+      },
+      watch: {
+        currentPage(value, oldValue){
+          this.filter.skip = this.filter.maxResult * (this.currentPage - 1)
+          this.load()
+        }
+      }
     });
 
     function loadExternalData(component) {
@@ -59,7 +87,8 @@
           'List',
           component.filter)
         .done((data) => {
-            component.items = data
+            component.items = data.items
+            component.totalRows = data.total
         })
         .fail((failure) => {
             console.log('Falha ao obtar dados do servidor', failure)
@@ -72,16 +101,29 @@
 
 <script type="text/template" id="vue-studants-grid-template">
   <div class="vue-grid">
-    <slot></slot>
+    <div class="grid-top-slot">
+      <slot></slot>
+      <b-pagination
+        class="mt-1"
+        style="align-self:flex-end;"
+        v-model="currentPage"
+        :total-rows="totalRows"
+        :per-page="filter.maxResult">
+      </b-pagination>
+    </div>
     <b-table 
-      class="mt-3"
+      id="studants-grid"
+      class="mt-1"
       :items="items" 
       :busy="isBusy" 
       :fields="fields" 
       :hover="true"
       :selectable="true"
       :select-mode="'single'"
+      :per-page="0"
+      :no-local-sorting="true"
       @@row-selected="onSelect"
+      @@sort-changed="onSort"
       outlined>
       <template #table-busy>
         <div class="text-center text-danger my-2">
