@@ -12,15 +12,17 @@
     <vue-studant-grid 
         ref="grid"
         @@select="onGridSelection">
-        <vue-grid-toolbar>
-            <template v-slot:left>
-                <div class="btn-group" role="group" aria-label="Basic outlined example">
-                    <b-button type="button" variant="primary" @@click="openCrudModal('create')">Criar</b-button>
-                    <b-button type="button" variant="primary" @@click="openCrudModal('update')">Editar</b-button>
-                    <b-button type="button" variant="primary" @@click="onRemove">Remover</b-button>
-                </div>
-            </template>
-        </vue-grid-toolbar>
+        <template #table-toolbar>
+            <vue-grid-toolbar>
+                <template v-slot:left>
+                    <div class="btn-group" role="group" aria-label="Basic outlined example">
+                        <b-button type="button" variant="primary" @@click="openCrudModal('create')">Criar</b-button>
+                        <b-button type="button" variant="primary" @@click="openCrudModal('update')">Editar</b-button>
+                        <b-button type="button" variant="primary" @@click="onRemove">Remover</b-button>
+                    </div>
+                </template>
+            </vue-grid-toolbar>
+        </template>
     </vue-studant-grid>
 
     <vue-studant-crud

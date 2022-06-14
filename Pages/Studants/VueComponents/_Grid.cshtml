@@ -1,136 +1,27 @@
-<style>
-  .vue-grid {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .grid-top-slot {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-</style>
+@{Html.RenderPartial("~/Pages/VueComponents/_Grid.cshtml");}
 
 <script type="text/javascript">
-    Vue.component('vue-studant-grid', {
-      data() {
-          return {
-            fields: [{
-              key: 'id',
-              label: 'Code',
-              sortable: true,
-            },
-            {
-              key: 'name',
-              label: 'Name',
-              sortable: true,
-            },
-            {
-              key: 'averageScore',
-              label: 'Average Score',
-              sortable: true,
-            }],
-            items: [],
-            totalRows: 0,
-            path: '/Studants',
-            isBusy: false,
-            selected: null,
-            currentPage: 1,
-            filter: {
-              skip: 0,
-              maxResult: 20,
-              sort: null
-            }
-          }
-      },
-      template: '#vue-studants-grid-template',
-      methods: {
-        onSelect(lines) {
-          this.selected = lines.length > 0 ? lines[0] : null
-          this.$emit('select', this.selected)
+  Vue.component('vue-studant-grid', {
+    mixins: [GetGridMixin()],
+    data() {
+      return {
+        fields: [{
+          key: 'id',
+          label: 'Code',
+          sortable: true,
         },
-        onSort(tableCtx) {
-          let sort = tableCtx.sortDesc ? '-' : '+'
-          sort = sort + tableCtx.sortBy
-          this.filter.sort = sort
-          this.filter.skip = 0
-          this.load()
-          this.currentPage = 1
+        {
+          key: 'name',
+          label: 'Name',
+          sortable: true,
         },
-        isBusyToggle () {
-          this.isBusy = !this.isBusy
-        },
-        load() {
-          loadExternalData(this)
-        }
-      },
-      mounted() {
-        this.load()
-      },
-      computed: {
-        paginationInfo() {
-          return "a"
-        }
-      },
-      watch: {
-        currentPage(value, oldValue){
-          this.filter.skip = this.filter.maxResult * (this.currentPage - 1)
-          this.load()
-        }
+        {
+          key: 'averageScore',
+          label: 'Average Score',
+          sortable: true,
+        }],
+        path: '/Studants'
       }
-    });
-
-    function loadExternalData(component) {
-      component.isBusyToggle();
-      return AjaxGet(
-          component.path,
-          'List',
-          component.filter)
-        .done((data) => {
-            component.items = data.items
-            component.totalRows = data.total
-        })
-        .fail((failure) => {
-            console.log('Falha ao obtar dados do servidor', failure)
-        })
-        .always(() => {
-          component.isBusyToggle()
-        })
     }
-</script>
-
-<script type="text/template" id="vue-studants-grid-template">
-  <div class="vue-grid">
-    <div class="grid-top-slot">
-      <slot></slot>
-      <b-pagination
-        class="mt-1"
-        style="align-self:flex-end;"
-        v-model="currentPage"
-        :total-rows="totalRows"
-        :per-page="filter.maxResult">
-      </b-pagination>
-    </div>
-    <b-table 
-      id="studants-grid"
-      class="mt-1"
-      :items="items" 
-      :busy="isBusy" 
-      :fields="fields" 
-      :hover="true"
-      :selectable="true"
-      :select-mode="'single'"
-      :per-page="0"
-      :no-local-sorting="true"
-      @@row-selected="onSelect"
-      @@sort-changed="onSort"
-      outlined>
-      <template #table-busy>
-        <div class="text-center text-danger my-2">
-          <b-spinner class="align-middle"></b-spinner>
-          <strong>Loading...</strong>
-        </div>
-      </template>
-    </b-table>
-  </div>
+  });
 </script>
