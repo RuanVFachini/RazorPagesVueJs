@@ -1,4 +1,5 @@
 @{Html.RenderPartial("~/Pages/VueComponents/_CrudModal.cshtml");}
+@{Html.RenderPartial("~/Pages/VueComponents/_CrudMixin.cshtml");}
 
 
 
@@ -6,95 +7,20 @@
 
     Vue.component('vue-studant-crud', {
         id:'studant-crud',
-        model: {
-            prop: 'show',
-            event: 'change-show'
-        },
-        props: {
-            data: {
-                type: Object,
-                default: () => {}
-            },
-            operation: null,
-            show: false,
-        },
+        mixins:[getCrudMixin()],
         data() {
             return {
                 path: '/Studants',
-                form: {},
             }
         },
         template: '#vue-alunos-crud-template',
         methods: {
-            propagateShowEvent: function(value) {
-                this.$emit('change-show', value)
-            },
-            propagateUpdateEvent: function(value) {
-                this.$emit('update', value)
-                this.propagateChangeDataEvent()
-            },
-            propagateCreateEvent: function(value) {
-                this.$emit('create', value)
-                this.propagateChangeDataEvent()
-            },
-            propagateDeleteEvent: function(value) {
-                this.$emit('delete', value)
-                this.propagateChangeDataEvent()
-            },
-            propagateResetEvent: function(value) {
-                this.$emit('reset', value)
-            },
-            propagateChangeDataEvent: function(value) {
-                this.$emit('change-data')
-            },
-            delete(id) {
-                this.form.id = id
-                this.$refs.crud.delete()
-            },
             clearForm() {
                 this.form = {
                     'id': null,
                     'name': '',
                     'averageScore': 0
                 }
-            }
-        },
-        computed: {
-          crudModalListeners: function() {
-            let vm = this
-            return {
-              "change-show": function(value) {
-                  vm.propagateShowEvent(value)
-              },
-              reset: function(value) {
-                  vm.propagateResetEvent(value)
-              },
-              update: function(value) {
-                  vm.propagateUpdateEvent(value)
-              },
-              create: function(value) {
-                  vm.propagateCreateEvent(value)
-              },
-              delete: function(value) {
-                  vm.propagateDeleteEvent(value)
-              }
-            }
-          }
-        },
-        watch: {
-            operation(value) {
-                if (value == 'create') {
-                    this.clearForm()
-                } else {
-                    this.form = this.data
-                }
-            },
-            data(value) {
-                if (this.operation == 'update' && hasValue(value)) {
-                    this.form = value
-                } else{
-                    this.clearForm()
-                } 
             }
         }
     });

@@ -1,0 +1,71 @@
+<script type="text/javascript">
+  function getCrudMixin() {
+    return {
+      model: {
+          prop: 'show',
+          event: 'change-show'
+      },
+      props: {
+          data: {
+              type: Object,
+              default: () => {}
+          },
+          operation: null,
+          show: false,
+      },
+      data() {
+          return {
+              form: {},
+          }
+      },
+      methods: {
+          propagateChangeDataEvent: function(event, value) {
+              this.$emit(event, value)
+              this.$emit('change-data')
+          },
+          delete(id) {
+              this.form.id = id
+              this.$refs.crud.delete()
+          },
+      },
+      computed: {
+        crudModalListeners: function() {
+          let vm = this
+          return {
+            "change-show": function(value) {
+                vm.$emit('change-show', value)
+            },
+            reset: function(value) {
+                vm.$emit('reset', value)
+            },
+            update: function(value) {
+                vm.propagateChangeDataEvent('update', value)
+            },
+            create: function(value) {
+                vm.propagateChangeDataEvent('create', value)
+            },
+            delete: function(value) {
+                vm.propagateChangeDataEvent('delete', value)
+            }
+          }
+        }
+      },
+      watch: {
+        operation(value) {
+            if (value == 'create') {
+                this.clearForm()
+            } else {
+                this.form = this.data
+            }
+        },
+        data(value) {
+            if (this.operation == 'update' && hasValue(value)) {
+                this.form = value
+            } else{
+                this.clearForm()
+            } 
+        }
+      }
+    }
+  }
+</script>
